@@ -12,7 +12,6 @@ Vote.init(
     },
     user_id: {
       type: DataTypes.INTEGER,
-      allowNull: false, 
       references: {
         model: 'user',
         key: 'id'
@@ -20,17 +19,16 @@ Vote.init(
     },
     post_id: {
       type: DataTypes.INTEGER,
-      allowNull: false,
-      reference: {
+      references: {
         model: 'post',
-        key: "id"
+        key: 'id'
       }
     }
   },
   {
     sequelize,
     timestamps: false,
-    freezeTableName: true, 
+    freezeTableName: true,
     underscored: true,
     modelName: 'vote'
   }

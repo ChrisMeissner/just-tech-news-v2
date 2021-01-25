@@ -1,7 +1,6 @@
 const { Model, DataTypes } = require('sequelize');
 const sequelize = require('../config/connection');
-
-// create our User model
+// create our Post model
 class Post extends Model {
   static upvote(body, models) {
     return models.Vote.create({
@@ -17,24 +16,30 @@ class Post extends Model {
           'post_url',
           'title',
           'created_at',
-          [
-            sequelize.literal('(SELECT COUNT (*) FROM vote WHERE post.id = vote.post_id)'),
-            'vote_count'
-          ]
+          [sequelize.literal('(SELECT COUNT(*) FROM vote WHERE post.id = vote.post_id)'), 'vote_count']
+        ],
+        include: [
+          {
+            model: models.Comment,
+            attributes: ['id', 'comment_text', 'post_id', 'user_id', 'created_at'],
+            include: {
+              model: models.User,
+              attributes: ['username']
+            }
+          }
         ]
       });
     });
   }
 }
 
-// define table columns and configuration
+// create fields/columns for Post model
 Post.init(
   {
-    // TABLE COLUMN DEFINITIONS GO HERE
     id: {
       type: DataTypes.INTEGER,
-      allowNull: false, 
-      primaryKey: true, 
+      allowNull: false,
+      primaryKey: true,
       autoIncrement: true
     },
     title: {
@@ -57,10 +62,9 @@ Post.init(
     }
   },
   {
-    // TABLE CONFIGURATION OPTIONS GO HERE
     sequelize,
-    freezeTableName: true, 
-    underscored: true, 
+    freezeTableName: true,
+    underscored: true,
     modelName: 'post'
   }
 );
